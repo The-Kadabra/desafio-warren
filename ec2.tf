@@ -11,7 +11,6 @@ module "ec2_instance" {
   spot_type            = "persistent"
 
   instance_type         = "t3.micro"
-  key_name              = "user1"
   monitoring            = true
   subnet_id             = module.vpc.private_subnets[0]
   
