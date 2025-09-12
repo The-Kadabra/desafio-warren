@@ -1,16 +1,3 @@
-name: terraform-deploy
-
-on:
-  workflow_dispatch:   # sempre manual
-
-permissions:
-  id-token: write
-  contents: read
-
-jobs:
-  # =======================
-  # DEV - Plan
-  # =======================
   dev-plan:
     runs-on: ubuntu-latest
     steps:
@@ -32,12 +19,16 @@ jobs:
       - name: Terraform Plan (DEV)
         run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan-dev.bin
 
-  # =======================
-  # DEV - Apply
-  # =======================
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tfplan-dev
+          path: tfplan-dev.bin
+
   dev-apply:
     needs: [dev-plan]
     runs-on: ubuntu-latest
+#    environment: dev
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -51,5 +42,10 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: tfplan-dev
+
       - name: Terraform Apply (DEV)
-        run: terraform apply tfplan-dev.bin  
+        run: terraform apply -auto-approve tfplan-dev.bin
