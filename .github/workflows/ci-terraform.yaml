@@ -11,56 +11,48 @@ jobs:
   # =======================
   # DEV - Plan
   # =======================
-  dev-plan:
+    dev-plan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Configure AWS credentials (OIDC - DEV)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
           aws-region: us-east-1
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
       - name: Terraform Init (DEV)
         run: terraform init -backend-config=infra/environment/dev/backend.hcl
-
       - name: Terraform Plan (DEV)
         run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan-dev.bin
-
       - name: Upload plan artifact
         uses: actions/upload-artifact@v4
         with:
           name: tfplan-dev
-          path: tfplan-dev.bin
+          path: |
+            tfplan-dev.bin
+            .terraform.lock.hcl
 
-  # =======================
-  # DEV - Apply
-  # =======================
   dev-apply:
     needs: [dev-plan]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Configure AWS credentials (OIDC - DEV)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
           aws-region: us-east-1
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
       - name: Download plan artifact
         uses: actions/download-artifact@v4
         with:
           name: tfplan-dev
-
+      - name: Terraform Init (DEV)
+        run: terraform init -backend-config=infra/environment/dev/backend.hcl
       - name: Terraform Apply (DEV)
         run: terraform apply -auto-approve tfplan-dev.bin
