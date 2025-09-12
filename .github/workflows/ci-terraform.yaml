@@ -52,6 +52,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Apply (DEV)
-        run: terraform apply -auto-approve tfplan-dev.bin
+        run: terraform apply -var-file=infra/environment/dev/env.tfvars -out=tfplan-dev.bin
 
   
