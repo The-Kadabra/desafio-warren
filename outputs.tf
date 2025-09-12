@@ -9,7 +9,7 @@ output "aws_caller_arn" {
 #########################################
 #Coletando as saidas para usar no código#
 #########################################
-output "vpc" {
+/*output "vpc" {
   value = module.vpc.*
-}
+}*/
 

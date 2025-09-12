@@ -30,6 +30,12 @@ security_group_egress_rules = {
     description = "Allow all outbound"
     }
   }
+
+user_data = <<-EOT
+#!/bin/bash
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+EOT
 }
 
 #####
