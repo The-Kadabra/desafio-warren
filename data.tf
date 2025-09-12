@@ -3,11 +3,15 @@
 #############
 data "aws_caller_identity" "current" {}
 
-#############
-#Data Subnet#
-#############
+#####
+#AMI#
+#####
+data "aws_ami" "amazon_linux" {
+  most_recent = true
+  owners      = ["amazon"]
 
-/*variable "vpc_subnet" {
-  description = "lista das subnets"
-  default     = ["microservices-private-us-east-1a", "microservices-private-us-east-1b"]
-}*/
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm-*-x86_64-gp2"]
+  }
+}
