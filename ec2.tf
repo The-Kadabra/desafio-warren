@@ -24,7 +24,7 @@
 #####
 #VPC#
 #####
-/*module "vpc" {
+module "vpc" {
   source = "terraform-aws-modules/vpc/aws"
 
   name = var.project
@@ -43,4 +43,4 @@
   enable_dns_support = true
 
   tags = var.tags
-}*/
+}
