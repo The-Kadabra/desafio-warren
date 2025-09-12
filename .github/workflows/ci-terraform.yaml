@@ -1,38 +1,161 @@
 name: terraform-deploy
 
 on:
-  workflow_dispatch:   # 👈 dispara manualmente pelo botão no GitHub
+  workflow_dispatch:   # sempre manual
 
 permissions:
-  id-token: write      # necessário para OIDC
-  contents: read       # para checkout
+  id-token: write
+  contents: read
 
 jobs:
-  terraform:
+  # =======================
+  # QA - Plan
+  # =======================
+  qa-plan:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC)
+      - name: Configure AWS credentials (OIDC - QA)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_QA }}
           aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init
-        run: terraform init -backend-config=infra/environment/dev/backend.hcl
+      - name: Terraform Init (QA)
+        run: terraform init -backend-config=infra/environment/qa/backend.hcl
 
-      - name: Terraform Validate
-        run: terraform validate
+      - name: Terraform Plan (QA)
+        run: terraform plan -var-file=infra/environment/qa/env.tfvars -out=tfplan-qa.bin
 
-      - name: Terraform Plan
-        run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan.bin
+  # =======================
+  # QA - Apply
+  # =======================
+  qa-apply:
+    needs: [qa-plan]
+    runs-on: ubuntu-latest
+    environment: qa   # habilite aprovação manual em Settings > Environments
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      # Deploy manual via botão → aplica direto
-      - name: Terraform Apply
-        run: terraform apply -auto-approve tfplan.bin
+      - name: Configure AWS credentials (OIDC - QA)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_QA }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (QA)
+        run: terraform init -backend-config=infra/environment/qa/backend.hcl
+
+      - name: Terraform Apply (QA)
+        run: terraform apply -auto-approve tfplan-qa.bin
+
+  # =======================
+  # STG - Plan
+  # =======================
+  stg-plan:
+    needs: [qa-apply]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC - STG)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STG }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (STG)
+        run: terraform init -backend-config=infra/environment/stg/backend.hcl
+
+      - name: Terraform Plan (STG)
+        run: terraform plan -var-file=infra/environment/stg/env.tfvars -out=tfplan-stg.bin
+
+  # =======================
+  # STG - Apply
+  # =======================
+  stg-apply:
+    needs: [stg-plan]
+    runs-on: ubuntu-latest
+    environment: stg   # habilite aprovação manual
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC - STG)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_STG }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (STG)
+        run: terraform init -backend-config=infra/environment/stg/backend.hcl
+
+      - name: Terraform Apply (STG)
+        run: terraform apply -auto-approve tfplan-stg.bin
+
+  # =======================
+  # PROD - Plan
+  # =======================
+  prod-plan:
+    needs: [stg-apply]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC - PROD)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (PROD)
+        run: terraform init -backend-config=infra/environment/prod/backend.hcl
+
+      - name: Terraform Plan (PROD)
+        run: terraform plan -var-file=infra/environment/prod/env.tfvars -out=tfplan-prod.bin
+
+  # =======================
+  # PROD - Apply
+  # =======================
+  prod-apply:
+    needs: [prod-plan]
+    runs-on: ubuntu-latest
+    environment: prod   # habilite aprovação manual
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC - PROD)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_PROD }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init (PROD)
+        run: terraform init -backend-config=infra/environment/prod/backend.hcl
+
+      - name: Terraform Apply (PROD)
+        run: terraform apply -auto-approve tfplan-prod.bin
