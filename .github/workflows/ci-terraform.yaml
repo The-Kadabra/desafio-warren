@@ -29,9 +29,6 @@ jobs:
       - name: Terraform Init (DEV)
         run: terraform init -backend-config=infra/environment/dev/backend.hcl
         
-      - name: Terraform force-unlock (DEV)
-        run: terraform force-unlock -force 9472300f-92ee-e651-8940-d8b66fea48d7
-
       - name: Terraform Plan (DEV)
         run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan-dev.bin
 
