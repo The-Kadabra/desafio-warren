@@ -16,7 +16,7 @@ module "ec2_instance" {
   subnet_id             = module.vpc.private_subnets[0]
   
   create_security_group       = true
-  security_group_name         = format("sg-%s-%s",var.project, var.environment)
+  security_group_name         = format("%s-%s",var.project, var.environment)
   security_group_description  = format("%s-%s",var.project, var.environment)
   iam_instance_profile        = aws_iam_instance_profile.ssm_profile.name
   ami      = data.aws_ami.amazon_linux.id
