@@ -4,16 +4,10 @@
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   depends_on = [module.vpc]
-  name                        = "spot-instance-desafio-warren"
-
-  create_spot_instance        = true
-  spot_price                  = "0.60"
-  spot_type                   = "persistent"
-
+  name                        = "instance-desafio-warren"
   instance_type               = "t3.micro"
   monitoring                  = true
   subnet_id                   = module.vpc.private_subnets[0]
-  spot_wait_for_fulfillment   = true
   
   create_security_group       = true
   security_group_name         = format("%s-%s",var.project, var.environment)
