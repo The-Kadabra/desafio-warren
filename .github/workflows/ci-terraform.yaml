@@ -30,7 +30,7 @@ jobs:
         run: terraform init -backend-config=infra/environment/dev/backend.hcl
 
       - name: Terraform Plan (DEV)
-        run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan-dev
+        run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan-dev.bin
 
   # =======================
   # DEV - Apply
@@ -52,6 +52,6 @@ jobs:
         uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Apply (DEV)
-        run: terraform apply -auto-approve tfplan-dev
+        run: terraform apply -auto-approve tfplan-dev.bin
 
   
