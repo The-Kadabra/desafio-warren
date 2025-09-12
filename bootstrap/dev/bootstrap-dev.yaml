@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "S3 bucket e DynamoDB table para armazenar e bloquear o Terraform state"
+Description: "S3, DynamoDB e OIDC para GitHub Actions"
 
 Resources:
   TerraformStateBucket:
@@ -39,10 +39,6 @@ Resources:
         - Key: ManagedBy
           Value: CloudFormation
 
-AWSTemplateFormatVersion: '2010-09-09'
-Description: "Configuração OIDC para GitHub Actions no repositório The-Kadabra/desafio-warren"
-
-Resources:
   GitHubOIDCProvider:
     Type: AWS::IAM::OIDCProvider
     Properties:
@@ -70,4 +66,3 @@ Resources:
                 token.actions.githubusercontent.com:sub: "repo:The-Kadabra/desafio-warren:ref:refs/heads/main"
       ManagedPolicyArns:
         - arn:aws:iam::aws:policy/AdministratorAccess
-
