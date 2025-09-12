@@ -1,18 +1,5 @@
-# Diretório interno do Terraform
 .terraform/
-
-# Lockfile
-.terraform.lock.hcl
-
-# States
 *.tfstate
 *.tfstate.*
-
-# Planos
+*.terraform.lock.hcl
 *.tfplan
-
-# Crash logs
-crash.log
-
-# Vars locais
-*.tfvars
