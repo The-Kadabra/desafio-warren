@@ -1,0 +1,48 @@
+name: ci-terraform
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  id-token: write   # necessário para OIDC
+  contents: read    # para checkout do repositório
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout do código
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Configuração das credenciais AWS via OIDC
+      - name: Configure AWS credentials from OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      # Instala o Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Inicializa Terraform com backend do ambiente DEV
+      - name: Terraform Init
+        run: terraform init -backend-config=infra/environment/dev/backend.hcl
+
+      # Valida sintaxe
+      - name: Terraform Validate
+        run: terraform validate
+
+      # Mostra plano
+      - name: Terraform Plan
+        run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan.bin
+
+      # Aplica em produção (aqui está restrito ao branch main)
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main'
+        run: terraform apply -auto-approve tfplan.bin
+

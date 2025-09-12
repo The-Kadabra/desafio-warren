@@ -1,0 +1,38 @@
+name: terraform-deploy
+
+on:
+  workflow_dispatch:   # 👈 dispara manualmente pelo botão no GitHub
+
+permissions:
+  id-token: write      # necessário para OIDC
+  contents: read       # para checkout
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Init
+        run: terraform init -backend-config=infra/environment/dev/backend.hcl
+
+      - name: Terraform Validate
+        run: terraform validate
+
+      - name: Terraform Plan
+        run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan.bin
+
+      # Deploy manual via botão → aplica direto
+      - name: Terraform Apply
+        run: terraform apply -auto-approve tfplan.bin
