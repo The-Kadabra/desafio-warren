@@ -4,23 +4,22 @@
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   depends_on = [module.vpc]
-  name = "spot-instance-desafio-warren"
+  name                        = "spot-instance-desafio-warren"
 
-  create_spot_instance = true
-  spot_price           = "0.60"
-  spot_type            = "persistent"
+  create_spot_instance        = true
+  spot_price                  = "0.60"
+  spot_type                   = "persistent"
 
-  instance_type         = "t3.micro"
-  monitoring            = true
-  subnet_id             = module.vpc.private_subnets[0]
+  instance_type               = "t3.micro"
+  monitoring                  = true
+  subnet_id                   = module.vpc.private_subnets[0]
+  spot_wait_for_fulfillment   = true
   
   create_security_group       = true
   security_group_name         = format("%s-%s",var.project, var.environment)
   security_group_description  = format("%s-%s",var.project, var.environment)
   iam_instance_profile        = aws_iam_instance_profile.ssm_profile.name
   ami      = data.aws_ami.amazon_linux.id
-
-
 
 security_group_egress_rules = {
   all_egress = {
