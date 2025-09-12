@@ -9,60 +9,60 @@ permissions:
 
 jobs:
   # =======================
-  # QA - Plan
+  # DEV - Plan
   # =======================
-  qa-plan:
+  dev-plan:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC - QA)
+      - name: Configure AWS credentials (OIDC - DEV)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_QA }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
           aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init (QA)
-        run: terraform init -backend-config=infra/environment/qa/backend.hcl
+      - name: Terraform Init (DEV)
+        run: terraform init -backend-config=infra/environment/dev/backend.hcl
 
-      - name: Terraform Plan (QA)
-        run: terraform plan -var-file=infra/environment/qa/env.tfvars -out=tfplan-qa.bin
+      - name: Terraform Plan (DEV)
+        run: terraform plan -var-file=infra/environment/dev/env.tfvars -out=tfplan-dev.bin
 
   # =======================
-  # QA - Apply
+  # DEV - Apply
   # =======================
-  qa-apply:
-    needs: [qa-plan]
+  dev-apply:
+    needs: [dev-plan]
     runs-on: ubuntu-latest
-    environment: qa   # habilite aprovação manual em Settings > Environments
+    environment: dev   # habilite aprovação manual em Settings > Environments
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials (OIDC - QA)
+      - name: Configure AWS credentials (OIDC - DEV)
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_ARN_QA }}
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN_DEV }}
           aws-region: us-east-1
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
-      - name: Terraform Init (QA)
-        run: terraform init -backend-config=infra/environment/qa/backend.hcl
+      - name: Terraform Init (DEV)
+        run: terraform init -backend-config=infra/environment/dev/backend.hcl
 
-      - name: Terraform Apply (QA)
-        run: terraform apply -auto-approve tfplan-qa.bin
+      - name: Terraform Apply (DEV)
+        run: terraform apply -auto-approve tfplan-dev.bin
 
   # =======================
   # STG - Plan
   # =======================
   stg-plan:
-    needs: [qa-apply]
+    needs: [dev-apply]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
