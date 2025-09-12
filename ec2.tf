@@ -28,7 +28,7 @@ security_group_egress_rules = {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_ipv4   = "0.0.0.0/0"
     description = "Allow all outbound"
     }
   }
