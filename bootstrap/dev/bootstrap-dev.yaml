@@ -1,0 +1,40 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "S3 bucket e DynamoDB table para armazenar e bloquear o Terraform state"
+
+Resources:
+  TerraformStateBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: desafio-warren-dev
+      VersioningConfiguration:
+        Status: Enabled
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      Tags:
+        - Key: Name
+          Value: terraform-state
+        - Key: Environment
+          Value: dev
+        - Key: ManagedBy
+          Value: CloudFormation
+
+  TerraformLocksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: dynamo-desafio-warren-dev
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+      KeySchema:
+        - AttributeName: LockID
+          KeyType: HASH
+      Tags:
+        - Key: Name
+          Value: terraform-locks
+        - Key: Environment
+          Value: dev
+        - Key: ManagedBy
+          Value: CloudFormation
