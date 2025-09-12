@@ -34,4 +34,3 @@ variable "public_subnet_suffix" {
   type        = string
   default     = "public"
 }
-
