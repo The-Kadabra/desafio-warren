@@ -2,7 +2,9 @@
 
 Este projeto tem como objetivo implementar Infraestrutura como código para provisionamento de recursos na AWS utilizando Terraform e GitHub Actions (CI/CD). O projeto cria e gerencia múltiplos ambientes (dev, stg, prod) com VPC, subnets, EC2, balanceador de carga (ALB), endpoints SSM, IAM/SSM para acesso seguro e automação de bootstrap de serviços (Nginx, Prometheus, Grafana, Node Exporter).
 
-O objetivo é fornecer uma infraestrutura automatizada, replicável e auditável, garantindo boas práticas de segurança, observabilidade e escalabilidade.
+O objetivo é fornecer uma infraestrutura automatizada, replicável e auditável, garantindo boas práticas de segurança, observabilidade e escalabilidade. 
+
+Para ver como este projeto pode ser executado acesse o [run.md](run.md).
 
 ## Infra-Code-Project
 
