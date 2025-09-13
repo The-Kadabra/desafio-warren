@@ -4,7 +4,7 @@ Este projeto tem como objetivo implementar Infraestrutura como código para prov
 
 O objetivo é fornecer uma infraestrutura automatizada, replicável e auditável, garantindo boas práticas de segurança, observabilidade e escalabilidade.
 
-## Infra-Project
+## Infra-Code-Project
 
 ```
 
@@ -48,3 +48,19 @@ O objetivo é fornecer uma infraestrutura automatizada, replicável e auditável
 ├── README.md                      # Documentação principal do projeto
 └── ssm.tf                         # Recursos relacionados ao AWS SSM (Session Manager)
 ```
+## Arquitetura
+
+![APIGTW](imagens/Arquitetura.png) 
+
+### Apresentando os recursos mais importantes
+- ``Application load balancer`` -> Estamos usando o ALB com intert-facing para ser a nossa camada de borda e ponto de conexão direta com o usuário.
+
+- ``Redes`` ->  A parte de network temos 3 estruturas chaves \
+    1- ) ``Subnet publica`` -> Recursos criados nela possui comunica direta da internet através do ``Internet Gateway``. \
+    2- ) ``Subnet privada`` -> Recursos criado nela não recebem solicitações de requisição da internet, porém contém acesso a internet através do ``Nat Gateway``. \
+    3- ) ``Route Table`` -> Temos basicamente 2 regras chaves. A primeira é a que garante a comunicação entre as subnets ``Publica<->Privada`` e a Segunda a regra que encaminha as request ``0.0.0.0/0`` para seus pontos de acesso a internet. \
+
+- ``EC2`` -> Com o shape t3.medium estamos rodando os aplicativos ``Nginx``, ``Grafana``, ``Prometheus`` e ``Node_Exporte``. O responsavel por gerar essa configuração é o user_data que está sendo passado no terraform.
+
+## CI/CD
+
