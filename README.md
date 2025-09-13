@@ -107,7 +107,7 @@ https://github.com/terraform-aws-modules/terraform-aws-key-pair
 
 ### Contato
 IN: https://www.linkedin.com/in/gabriel-henrique-pires-5039a3168/ \
-Youtube: https://www.youtube.com/@Gabriel_Pires_Tech  \
+Youtube: https://www.youtube.com/watch?v=pVdRtcAvNeg  \
 E-mail: gabriel.pires.ti@gmail.com
 
 
