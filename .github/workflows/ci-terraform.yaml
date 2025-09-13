@@ -1,7 +1,7 @@
 name: terraform-deploy
 
 on:
-  workflow_dispatch:   # sempre manual
+  workflow_dispatch:   
 
 permissions:
   id-token: write
@@ -11,7 +11,7 @@ jobs:
   # =======================
   # DEV - Plan
   # =======================
-  dev-plan:          # 👈 sem espaços extras aqui
+  dev-plan:          
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
